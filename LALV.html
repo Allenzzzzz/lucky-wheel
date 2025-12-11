@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lucky Wheel Prize Draw</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            padding: 20px;
+            width: 100%;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            width: 100%;
+            margin-bottom: 30px;
+        }
+        
+        .wheel-section {
+            flex: 1;
+            min-width: 300px;
+            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .wheel-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-bottom: 30px;
+        }
+        
+        .wheel {
+            width: 100%;
+            height: auto;
+            max-width: 500px;
+            transition: transform 0.1s linear;
+            transform-origin: center;
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.3));
+        }
+        
+        .wheel-pointer {
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 60px;
+            z-index: 10;
+            color: #ff4757;
+            filter: drop-shadow(0 5px 5px rgba(0, 0, 0, 0.3));
+        }
+        
+        .spin-btn {
+            background: linear-gradient(to right, #ff8a00, #ff2070);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(255, 32, 112, 0.4);
+            letter-spacing: 1px;
+        }
+        
+        .spin-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(255, 32, 112, 0.5);
+        }
+        
+        .spin-btn:disabled {
+            background: linear-gradient(to right, #a1a1a1, #7a7a7a);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .result-section {
+            flex: 1;
+            min-width: 300px;
+            max-width: 500px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .result-title {
+            font-size: 1.8rem;
+            color: #2575fc;
+            margin-bottom: 20px;
+            text-align: center;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eee;
+        }
+        
+        .current-result {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .result-label {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+        
+        .result-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .prizes-list {
+            margin-bottom: 30px;
+        }
+        
+        .prizes-title {
+            font-size: 1.4rem;
+            color: #2575fc;
+            margin-bottom: 15px;
+        }
+        
+        .prize-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+            font-size: 1.1rem;
+        }
+        
+        .prize-item:nth-child(odd) {
+            background-color: #f9f9f9;
+        }
+        
+        .prize-name {
+            font-weight: 600;
+        }
+        
+        .prize-probability {
+            color: #666;
+        }
+        
+        .history-title {
+            font-size: 1.4rem;
+            color: #2575fc;
+            margin-bottom: 15px;
+        }
+        
+        .history-list {
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .history-item {
+            padding: 8px 12px;
+            border-bottom: 1px dashed #ddd;
+            font-size: 1rem;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        
+        .scan-instruction {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: center;
+            color: white;
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        .scan-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .qr-code {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            display: inline-block;
+            margin: 15px 0;
+        }
+        
+        .instructions {
+            text-align: left;
+            margin-top: 20px;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        
+        .instruction-step {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .step-number {
+            background: #ff8a00;
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-weight: bold;
+        }
+        
+        .counter {
+            margin-top: 15px;
+            font-size: 1.1rem;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            display: inline-block;
+        }
+        
+        footer {
+            margin-top: 30px;
+            color: rgba(255, 255, 255, 0.8);
+            text-align: center;
+            font-size: 0.9rem;
+            padding: 20px;
+            width: 100%;
+        }
+        
+        .pulse {
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.8; }
+            50% { opacity: 1; }
+            100% { opacity: 0.8; }
+        }
+        
+        @keyframes confetti {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(1000px) rotate(720deg); opacity: 0; }
+        }
+        
+        .confetti {
+            position: fixed;
+            width: 15px;
+            height: 15px;
+            background-color: #f0f;
+            top: -20px;
+            opacity: 0;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .wheel-section, .result-section {
+                width: 100%;
+                max-width: 100%;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .spin-btn {
+                padding: 15px 30px;
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1><i class="fas fa-gift"></i> Lucky Wheel Prize Draw</h1>
+            <p class="subtitle">Spin the wheel to win exciting prizes! Each participant gets one chance to win. Prizes include a Grand Prize, First Prize, and other amazing rewards.</p>
+        </header>
+        
+        <div class="content">
+            <div class="wheel-section">
+                <div class="wheel-container">
+                    <svg class="wheel-pointer" viewBox="0 0 100 100">
+                        <polygon points="50,0 65,100 35,100" fill="currentColor"/>
+                    </svg>
+                    <svg class="wheel" viewBox="0 0 300 300" id="wheel">
+                        <!-- Wheel segments will be generated by JavaScript -->
+                    </svg>
+                </div>
+                <button class="spin-btn" id="spinBtn">
+                    <i class="fas fa-redo-alt"></i> SPIN THE WHEEL
+                </button>
+                <div class="counter" id="spinCounter">Spins remaining: <span id="remainingSpins">1</span></div>
+            </div>
+            
+            <div class="result-section">
+                <h2 class="result-title"><i class="fas fa-trophy"></i> Draw Results</h2>
+                
+                <div class="current-result">
+                    <div class="result-label">You won</div>
+                    <div class="result-value" id="currentResult">Waiting for spin</div>
+                </div>
+                
+                <div class="prizes-list">
+                    <h3 class="prizes-title"><i class="fas fa-star"></i> Prizes</h3>
+                    <div id="prizesList">
+                        <!-- Prizes list will be generated by JavaScript -->
+                    </div>
+                </div>
+                
+                <div class="history">
+                    <h3 class="history-title"><i class="fas fa-history"></i> Recent Winners</h3>
+                    <div class="history-list" id="historyList">
+                        <!-- History will be generated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+
+
+    <script>
+        // Prize configuration
+        const prizes = [
+            { name: "10% Off on D2 Plus", color: "#CD7F32", probability: 15, description: "10% Off on D2 Plus" },
+            { name: "10% Off on D2 Pro", color: "#FFD700", probability: 15, description: "10% Off on D2 Pro" },            
+            { name: "20% Off on D2 Plus", color: "#C0C0C0", probability: 10, description: "20% Off on D2 Plus" },
+            { name: "20% Off on D2 Pro", color: "#FF6B6B", probability: 5, description: "20% Off on D2 Pro" },
+            { name: "30% Off on D2 Pro", color: "#95A5A6", probability: 5, description: "30% Off on D2 Pro" }
+            { name: "Free D2 Pro", color: "#4ECDC4", probability: 50, description: "Free D2 Pro" },            
+        ];
+        
+        // Initialize variables
+        let isSpinning = false;
+        let currentRotation = 0;
+        let spinCount = 0;
+        const maxSpins = 1; // Limit to one spin per user
+        
+        // DOM elements
+        const wheel = document.getElementById('wheel');
+        const spinBtn = document.getElementById('spinBtn');
+        const currentResult = document.getElementById('currentResult');
+        const prizesList = document.getElementById('prizesList');
+        const historyList = document.getElementById('historyList');
+        const remainingSpinsElement = document.getElementById('remainingSpins');
+        
+        // Initialize wheel
+        function initWheel() {
+            wheel.innerHTML = '';
+            const centerX = 150;
+            const centerY = 150;
+            const radius = 140;
+            const anglePerPrize = 2 * Math.PI / prizes.length;
+            
+            // Create wheel segments
+            prizes.forEach((prize, index) => {
+                const startAngle = index * anglePerPrize;
+                const endAngle = (index + 1) * anglePerPrize;
+                
+                // Calculate segment path
+                const x1 = centerX + radius * Math.sin(startAngle);
+                const y1 = centerY - radius * Math.cos(startAngle);
+                const x2 = centerX + radius * Math.sin(endAngle);
+                const y2 = centerY - radius * Math.cos(endAngle);
+                
+                // Create segment path
+                const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                const d = `
+                    M ${centerX} ${centerY}
+                    L ${x1} ${y1}
+                    A ${radius} ${radius} 0 0 1 ${x2} ${y2}
+                    Z
+                `;
+                path.setAttribute("d", d);
+                path.setAttribute("fill", prize.color);
+                path.setAttribute("stroke", "#fff");
+                path.setAttribute("stroke-width", "2");
+                path.setAttribute("data-index", index);
+                wheel.appendChild(path);
+                
+                // Add prize text
+                const textAngle = startAngle + anglePerPrize / 2;
+                const textRadius = radius * 0.7;
+                const textX = centerX + textRadius * Math.sin(textAngle);
+                const textY = centerY - textRadius * Math.cos(textAngle);
+                
+                const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                text.setAttribute("x", textX);
+                text.setAttribute("y", textY);
+                text.setAttribute("text-anchor", "middle");
+                text.setAttribute("fill", "#000");
+                text.setAttribute("font-weight", "bold");
+                text.setAttribute("font-size", "14");
+                text.setAttribute("transform", `rotate(${textAngle * 180 / Math.PI}, ${textX}, ${textY})`);
+                
+                // Split longer prize names
+                if (prize.name.length > 12) {
+                    const words = prize.name.split(' ');
+                    if (words.length > 1) {
+                        text.innerHTML = `<tspan x="${textX}" dy="-0.3em">${words.slice(0, words.length-1).join(' ')}</tspan>
+                                          <tspan x="${textX}" dy="1.2em">${words[words.length-1]}</tspan>`;
+                    } else {
+                        text.textContent = prize.name;
+                    }
+                } else {
+                    text.textContent = prize.name;
+                }
+                
+                wheel.appendChild(text);
+            });
+            
+            // Add center circle
+            const centerCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            centerCircle.setAttribute("cx", centerX);
+            centerCircle.setAttribute("cy", centerY);
+            centerCircle.setAttribute("r", 30);
+            centerCircle.setAttribute("fill", "#fff");
+            centerCircle.setAttribute("stroke", "#333");
+            centerCircle.setAttribute("stroke-width", "3");
+            wheel.appendChild(centerCircle);
+            
+            // Add center text
+            const centerText = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            centerText.setAttribute("x", centerX);
+            centerText.setAttribute("y", centerY + 5);
+            centerText.setAttribute("text-anchor", "middle");
+            centerText.setAttribute("fill", "#2575fc");
+            centerText.setAttribute("font-weight", "bold");
+            centerText.setAttribute("font-size", "16");
+            centerText.textContent = "SPIN";
+            wheel.appendChild(centerText);
+        }
+        
+        // Initialize prizes list
+        function initPrizesList() {
+            prizesList.innerHTML = '';
+            prizes.forEach(prize => {
+                const prizeItem = document.createElement('div');
+                prizeItem.className = 'prize-item';
+                prizeItem.innerHTML = `
+                    <div class="prize-name">${prize.name}</div>
+                `;
+                prizesList.appendChild(prizeItem);
+            });
+        }
+        
+        // Create confetti animation
+        function createConfetti() {
+            const colors = ['#FFD700', '#C0C0C0', '#FF6B6B', '#4ECDC4', '#FF8A00', '#2575fc'];
+            const confettiCount = 100;
+            
+            for (let i = 0; i < confettiCount; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.width = Math.random() * 15 + 10 + 'px';
+                confetti.style.height = Math.random() * 15 + 10 + 'px';
+                confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+                
+                document.body.appendChild(confetti);
+                
+                // Animation
+                const animation = confetti.animate([
+                    { transform: 'translateY(-100px) rotate(0deg)', opacity: 1 },
+                    { transform: `translateY(${window.innerHeight + 100}px) rotate(${Math.random() * 720}deg)`, opacity: 0 }
+                ], {
+                    duration: Math.random() * 3000 + 2000,
+                    easing: 'cubic-bezier(0.215, 0.61, 0.355, 1)'
+                });
+                
+                // Remove confetti after animation
+                animation.onfinish = () => {
+                    confetti.remove();
+                };
+            }
+        }
+        
+        // Spin the wheel
+        function spinWheel() {
+            if (isSpinning || spinCount >= maxSpins) return;
+            
+            isSpinning = true;
+            spinBtn.disabled = true;
+            spinBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> SPINNING...';
+            
+            // Generate random result based on probability
+            const randomValue = Math.random() * 100;
+            let cumulativeProbability = 0;
+            let selectedPrizeIndex = 0;
+            
+            for (let i = 0; i < prizes.length; i++) {
+                cumulativeProbability += prizes[i].probability;
+                if (randomValue <= cumulativeProbability) {
+                    selectedPrizeIndex = i;
+                    break;
+                }
+            }
+            
+            // Calculate rotation angle (ensure pointer points to selected prize)
+            const prizeAngle = 360 / prizes.length;
+            const targetRotation = 3600 + (prizes.length - selectedPrizeIndex) * prizeAngle - prizeAngle / 2;
+            
+            // Apply rotation animation
+            wheel.style.transition = 'transform 2.5s cubic-bezier(0.2, 0.8, 0.3, 1)';
+            wheel.style.transform = `rotate(${currentRotation + targetRotation}deg)`;
+            currentRotation += targetRotation;
+            
+            // Show result after spin
+            setTimeout(() => {
+                const selectedPrize = prizes[selectedPrizeIndex];
+                currentResult.innerHTML = `
+                    <div style="color: ${selectedPrize.color}; text-shadow: 1px 1px 3px rgba(0,0,0,0.2);">
+                        ${selectedPrize.name}
+                    </div>
+                `;
+                
+                // Add to winners history
+                addToHistory(selectedPrize);
+                
+                // Update spin counter
+                spinCount++;
+                remainingSpinsElement.textContent = maxSpins - spinCount;
+                
+                // Disable button after spin
+                spinBtn.disabled = true;
+                spinBtn.innerHTML = '<i class="fas fa-check"></i> SPIN COMPLETED';
+                
+                // Show confetti for winners (except for "Better Luck Next Time")
+                if (selectedPrize.name !== "Better Luck Next Time") {
+                    createConfetti();
+                    currentResult.classList.add("pulse");
+                } else {
+                    currentResult.classList.remove("pulse");
+                }
+                
+                isSpinning = false;
+            }, 2500);
+            
+            // Show spinning message
+            setTimeout(() => {
+                currentResult.innerHTML = '<div><i class="fas fa-spinner fa-spin"></i> Spinning...</div>';
+            }, 500);
+        }
+        
+        // Add to winners history
+        function addToHistory(prize) {
+            const historyItem = document.createElement('div');
+            historyItem.className = 'history-item';
+            const now = new Date();
+            const timeString = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+            
+            // Generate a random user name for demo purposes
+            const userNames = ["Alex", "Jamie", "Taylor", "Jordan", "Casey", "Riley", "Morgan", "Quinn"];
+            const randomName = userNames[Math.floor(Math.random() * userNames.length)];
+            
+            historyItem.innerHTML = `
+                <div>${randomName} - ${prize.name}</div>
+                <div>${timeString}</div>
+            `;
+            
+            // Add new record to the top
+            historyList.insertBefore(historyItem, historyList.firstChild);
+            
+            // Limit history records
+            if (historyList.children.length > 10) {
+                historyList.removeChild(historyList.lastChild);
+            }
+        }
+        
+        // Initialize history with sample data
+        function initHistory() {
+            const samplePrizes = ["Better Luck Next Time", "Fourth Prize", "Third Prize", "First Prize", "Grand Prize"];
+            const sampleTimes = ["10:25:34", "10:18:22", "10:12:45", "10:05:12", "09:58:33"];
+            const sampleNames = ["Alex Johnson", "Sam Wilson", "Taylor Smith", "Jordan Lee", "Casey Brown"];
+            
+            samplePrizes.forEach((prize, index) => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                historyItem.innerHTML = `
+                    <div>${sampleNames[index]} - ${prize}</div>
+                    <div>${sampleTimes[index]}</div>
+                `;
+                historyList.appendChild(historyItem);
+            });
+        }
+        
+        // Update remaining spins display
+        function updateSpinCounter() {
+            remainingSpinsElement.textContent = maxSpins - spinCount;
+        }
+        
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            initWheel();
+            initPrizesList();
+            initHistory();
+            updateSpinCounter();
+            
+            // Bind spin button event
+            spinBtn.addEventListener('click', spinWheel);
+            
+            // Add initial wheel animation
+            setTimeout(() => {
+                wheel.style.transition = 'transform 1s ease';
+                wheel.style.transform = 'rotate(360deg)';
+                
+                setTimeout(() => {
+                    wheel.style.transition = 'transform 0.5s ease';
+                    wheel.style.transform = 'rotate(0deg)';
+                }, 1000);
+            }, 500);
+        });
+    </script>
+</body>
+</html>
